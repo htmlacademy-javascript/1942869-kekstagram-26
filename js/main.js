@@ -25,8 +25,11 @@ const maxStrLength = (str, maxLength) => {
 
 
 /* Код проверки функций */
+
+getRandomIntInclusive(1, 10)
 // console.log(getRandomIntInclusive(1, 10));
 // console.log(getRandomIntInclusive(-1, 10));
 
+maxStrLength('Строка', 10)
 // console.log(maxStrLength('Строка', 10));
 // console.log(maxStrLength('Строка', 1));
