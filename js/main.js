@@ -68,9 +68,17 @@ const getRandomEnumElement = (elems) => elems[getRandomIntInclusive(0,elems.leng
 
 let commentId = 1;
 
+const MIN_COMMENT_NUMBER = 1;
+const MAX_COMMENT_NUMBER = 6;
+const MIN_NUMBER_OF_LIKES = 25;
+const MAX_NUMBER_OF_LIKES = 100;
+const MIN_NUMBER_OF_COMMENTS = 0;
+const MAX_NUMBER_OF_COMMENTS = 5;
+
+
 const makeComment = () => ({
   id: commentId++,
-  avatar:`img/avatar-${  getRandomIntInclusive(1, 6)  }.svg`,
+  avatar:`img/avatar-${  getRandomIntInclusive(MIN_COMMENT_NUMBER, MAX_COMMENT_NUMBER)  }.svg`,
   message: getRandomEnumElement(COMMENTS),
   name: getRandomEnumElement(NAMES)
 });
@@ -88,8 +96,8 @@ const makePhoto = (id) => ({
   id: id,
   url: `photos/${  id  }.jpg`,
   description: getRandomEnumElement(DESCRIPTIONS),
-  likes: getRandomIntInclusive(25,100),
-  comments: makeComments(getRandomIntInclusive(0,5))
+  likes: getRandomIntInclusive(MIN_NUMBER_OF_LIKES, MAX_NUMBER_OF_LIKES),
+  comments: makeComments(getRandomIntInclusive(MIN_NUMBER_OF_COMMENTS, MAX_NUMBER_OF_COMMENTS))
 });
 
 const makePhotos = (count) => {
