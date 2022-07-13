@@ -1,3 +1,6 @@
-import {makePhotos} from './data.js';
+import { makePhotos } from './data.js';
+import { renderPhotos } from './feed.js';
 
-makePhotos(25);
+const photos = makePhotos(25);
+
+renderPhotos(photos);
