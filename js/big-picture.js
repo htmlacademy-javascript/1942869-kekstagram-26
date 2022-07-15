@@ -18,7 +18,6 @@ const showPicture = (photo) => {
 
   // Список комментариев под фотографией: комментарии должны вставляться в блок .social__comments
   const socialComments = document.querySelector('.social__comments');
-  const commentsTemplate = document.querySelector('social__comment');
 
   // Удаляем содержимое блока social__comments
   document.querySelectorAll('.social__comment').forEach((li) => li.remove());
@@ -29,10 +28,19 @@ const showPicture = (photo) => {
   const comments = photo.comments;
 
   comments.forEach((comment) => {
-    const commentsElement = commentsTemplate.cloneNode(true);
-    commentsElement.querySelector('img').src = comment.avatar;
-    commentsElement.querySelector('img').alt = comment.name;
-    commentsElement.querySelector('.social__text').textContent = comment.message;
+    const commentsElement = document.createElement('li');
+    commentsElement.classList.add('social__comment');
+    const socialPicture = document.createElement('img');
+    socialPicture.src = comment.avatar;
+    socialPicture.alt = comment.name;
+    socialPicture.width = 35;
+    socialPicture.height = 35;
+    commentsElement.append(socialPicture);
+
+    const socialText = document.createElement('p');
+    socialText.classList.add('social__text');
+    socialText.textContent=comment.message;
+    commentsElement.append(socialText);
     commentsFragment.append(commentsElement);
   });
 

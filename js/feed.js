@@ -20,13 +20,14 @@ const renderPhotos = (photos) => {
     pictureElement.querySelector('.picture__img').src = photo.url;
     pictureElement.querySelector('.picture__likes').textContent = photo.likes;
     pictureElement.querySelector('.picture__comments').textContent = photo.comments.length;
-    // Записали во фрагмент этот элемент (увеличили его на этот элемент)
-    pictureFragment.append(pictureElement);
 
     //Добавляем слушатель
     pictureElement.addEventListener('click', () => {
       showPicture(photo);
     });
+
+    // Записали во фрагмент этот элемент (увеличили его на этот элемент)
+    pictureFragment.append(pictureElement);
   });
 
   // 5 Добавляем фрагмент в найденный в п1 контейнер
