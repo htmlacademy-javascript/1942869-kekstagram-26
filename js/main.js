@@ -4,3 +4,4 @@ import { renderPhotos } from './feed.js';
 const photos = makePhotos(25);
 
 renderPhotos(photos);
+
