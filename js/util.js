@@ -15,21 +15,20 @@ function getRandomIntInclusive(min, max) {
 
 // Функция для проверки максимальной длины строки
 
-// const maxStrLength = (str, maxLength) => {
-//   if (typeof str !== 'string') {
-//     throw new TypeError('Введена не строка!');
-//   }
+const isMaxStrLengthFitSize = (str, maxLength) => {
+  if (typeof str !== 'string') {
+    throw new TypeError('Введена не строка!');
+  }
 
-//   return str.length <= maxLength;
-// };
-
-// /* Код проверки функции maxStrLength */
-
-// maxStrLength('Строка', 10);
-// // console.log(maxStrLength('Строка', 10));
-// // console.log(maxStrLength('Строка', 1));
+  return str.length <= maxLength;
+};
 
 const getRandomEnumElement = (elems) => elems[getRandomIntInclusive(0,elems.length-1)];
 
+// Функция для проверки клавиши Esc
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
 export {getRandomEnumElement};
 export {getRandomIntInclusive};
+export {isEscapeKey};
+export {isMaxStrLengthFitSize};

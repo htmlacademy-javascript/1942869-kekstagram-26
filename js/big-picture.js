@@ -1,7 +1,13 @@
+import { isEscapeKey } from './util.js';
+
 const bigPicture = document.querySelector('.big-picture');
-const popup = document.querySelector('body');
+const bodyElement = document.querySelector('body');
 
 const showPicture = (photo) => {
+
+  // Объявление функции закрытия большого фото, чтобы её можно было добавить в функцию обработчика
+  let closePicture = () => {};
+
   bigPicture.classList.remove('hidden');
 
   // Адрес изображения url подставляется как src изображения внутри блока .big-picture__img
@@ -51,39 +57,48 @@ const showPicture = (photo) => {
   bigPictureDescription.textContent = photo.description;
 
   // Скрытие блока счётчика комментариев
-
   const socialCommentCount = document.querySelector('.social__comment-count');
   socialCommentCount.classList.add('hidden');
 
   //Скрытие блока загрузки новых комментариев
-
   const socialCommentsLoader = document.querySelector('.comments-loader');
   socialCommentsLoader.classList.add('hidden');
 
   // После открытия окна добавьте тегу <body> класс modal-open, чтобы контейнер с фотографиями
   // позади не прокручивался при скролле.
-  popup.classList.add('modal-open');
+  bodyElement.classList.add('modal-open');
 
-  const closePicture = () => {
-    bigPicture.classList.add('hidden');
+  // Функция действий при нажатии кнопки Esc
+  const onBigPictureEscKeydown = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      closePicture();
+    }
+  };
 
-    // При закрытии окна не забудьте удалить этот класс.
-    popup.classList.remove('modal-open');
+  // Функция действий при клике на Cancel
+  const onBigPictureCancelClick = () => {
+    closePicture();
   };
 
   // Код для закрытия окна по нажатию клавиши Esc и клике по иконке закрытия.
-
   const bigPictureCancel = document.querySelector('.big-picture__cancel');
 
-  bigPictureCancel.addEventListener('click', () => {
-    closePicture();
-  });
+  // Переопределение функции закрытия Изображения
+  closePicture = () => {
+    bigPicture.classList.add('hidden');
 
-  document.addEventListener('keydown', (evt) => {
-    if (evt.key === 'Escape') {
-      closePicture();
-    }
-  });
+    // При закрытии окна не забудьте удалить этот класс.
+    bodyElement.classList.remove('modal-open');
+
+    // Удаляем обработчик события на Esc и на Клик
+    bigPictureCancel.removeEventListener('click', onBigPictureCancelClick);
+    document.removeEventListener('keydown', onBigPictureEscKeydown);
+  };
+
+  // Добавление обработчиков событий
+  bigPictureCancel.addEventListener('click', onBigPictureCancelClick);
+  document.addEventListener('keydown', onBigPictureEscKeydown);
 };
 
 export {showPicture};
