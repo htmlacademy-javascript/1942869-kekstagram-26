@@ -1,5 +1,9 @@
 import { isEscapeKey, isMaxStrLengthFitSize } from './util.js';
 
+const HASHTAG_REGEX = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+const COMMENTS_MAX_LENGTH = 140;
+const MAX_TAGS_COUNT = 5;
+
 const imgUploadForm = document.querySelector('.img-upload__form');
 const imgUploadOverlay = document.querySelector('.img-upload__overlay');
 const bodyElement = document.querySelector('body');
@@ -8,15 +12,9 @@ const uploadFileElement = imgUploadForm.querySelector('#upload-file');
 // Переменные для валидации
 const textHashtagElement = imgUploadForm.querySelector('.text__hashtags');
 const textDescriptionElement = imgUploadForm.querySelector('.text__description');
-const HASHTAG_REGEX = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
-const COMMENTS_MAX_LENGTH = 140;
-const MAX_TAGS_COUNT = 5;
 
 // Открытие формы и редактирования изображения
 const showUploadForm = () => {
-
-  // Объявление функции закрытия формы, чтобы её можно было добавить в функцию обработчика
-  let closeUploadForm = () => {};
 
   // У элемента .img-upload__overlay удаляется класс hidden, а body задаётся класс modal-open
   imgUploadOverlay.classList.remove('hidden');
@@ -39,7 +37,7 @@ const showUploadForm = () => {
   const imgUploadCancel = document.querySelector('.img-upload__cancel');
 
   // Функция закрытия формы и редактирования изображения
-  closeUploadForm = () => {
+  function closeUploadForm () {
     imgUploadOverlay.classList.add('hidden');
     bodyElement.classList.remove('modal-open');
     // Обратите внимание, что при закрытии формы дополнительно необходимо сбрасывать значение поля выбора файла
@@ -52,7 +50,7 @@ const showUploadForm = () => {
     document.removeEventListener('keydown', onImgUploadFormEscKeydown);
     imgUploadCancel.removeEventListener('click', onUploadCancelButtonClick);
 
-  };
+  }
 
   // Добавление обработчиков событий
   imgUploadCancel.addEventListener('click', onUploadCancelButtonClick);
@@ -83,15 +81,13 @@ textHashtagElement.addEventListener('keydown', onInputEscKeydown);
 textDescriptionElement.addEventListener('keydown', onInputEscKeydown);
 
 // Функция для валидации комментариев
-const validateCommentMaxLength = (str) => {
-  isMaxStrLengthFitSize(str, COMMENTS_MAX_LENGTH);
-};
+const validateCommentMaxLength = (str) => isMaxStrLengthFitSize( str, COMMENTS_MAX_LENGTH );
 
 // - хэш-тег начинается с символа # (решётка);
 // - строка после решётки должна состоять из букв и чисел и не может содержать пробелы, спецсимволы
 // - хеш-тег не может состоять только из одной решётки;
 // - максимальная длина одного хэш-тега 20 символов, включая решётку;
-const vaidateHashTagsNames = (data) => {
+const validateHashTagsNames = (data) => {
   if (data.length > 0) {
     // - хэш-теги разделяются пробелами;
     const tagsArray = data.split(' ');
@@ -101,14 +97,14 @@ const vaidateHashTagsNames = (data) => {
 };
 
 // - нельзя указать больше пяти хэш-тегов;
-const vaidateHashTagsNumbers = (data) => {
+const validateHashTagsNumbers = (data) => {
   // - хэш-теги разделяются пробелами;
   const tagsArray = data.split(' ');
   return(tagsArray.length <= MAX_TAGS_COUNT);
 };
 
 // - один и тот же хэш-тег не может быть использован дважды;
-const vaidateHashTagsDuplicates = (data) => {
+const validateHashTagsDuplicates = (data) => {
   // - хэш-теги разделяются пробелами;
   const tagsArray = data.split(' ');
   // - хэш-теги нечувствительны к регистру: #ХэшТег и #хэштег считаются одним и тем же тегом;
@@ -119,26 +115,29 @@ const vaidateHashTagsDuplicates = (data) => {
 // Подключение Pristine
 const pristine = new Pristine(imgUploadForm, {
   classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__item--invalid',
+  successClass: 'img-upload__item--valid',
   errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div'
 });
 
 // Добавление валидаторов
 
 pristine.addValidator(
   textHashtagElement,
-  vaidateHashTagsNames,
+  validateHashTagsNames,
   'Хэш-тег должен начинается с символа #, состоять из букв и чисел, не содержать пробелы, спецсимволы и быть от 2 до 20'
 );
 
 pristine.addValidator(
   textHashtagElement,
-  vaidateHashTagsNumbers,
+  validateHashTagsNumbers,
   'Нельзя указать больше пяти хэш-тегов'
 );
 
 pristine.addValidator(
   textHashtagElement,
-  vaidateHashTagsDuplicates,
+  validateHashTagsDuplicates,
   'Один и тот же хэш-тег не может быть использован дважды'
 );
 

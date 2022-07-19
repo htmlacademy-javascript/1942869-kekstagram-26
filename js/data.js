@@ -1,5 +1,12 @@
 import {getRandomEnumElement, getRandomIntInclusive} from './util.js';
 
+const MIN_COMMENT_NUMBER = 1;
+const MAX_COMMENT_NUMBER = 6;
+const MIN_NUMBER_OF_LIKES = 25;
+const MAX_NUMBER_OF_LIKES = 100;
+const MIN_NUMBER_OF_COMMENTS = 6;
+const MAX_NUMBER_OF_COMMENTS = 23;
+
 const NAMES = [
   'Артём',
   'Никита',
@@ -28,16 +35,7 @@ const COMMENTS = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-
 let commentId = 1;
-
-const MIN_COMMENT_NUMBER = 1;
-const MAX_COMMENT_NUMBER = 6;
-const MIN_NUMBER_OF_LIKES = 25;
-const MAX_NUMBER_OF_LIKES = 100;
-const MIN_NUMBER_OF_COMMENTS = 0;
-const MAX_NUMBER_OF_COMMENTS = 5;
-
 
 const makeComment = () => ({
   id: commentId++,
