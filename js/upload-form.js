@@ -1,4 +1,6 @@
 import { isEscapeKey, isMaxStrLengthFitSize } from './util.js';
+import {beginScale, finishScale} from './picture-scale.js';
+import {accessEffects, finishEffects} from './photo-effects.js';
 
 const HASHTAG_REGEX = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
 const COMMENTS_MAX_LENGTH = 140;
@@ -36,6 +38,11 @@ const showUploadForm = () => {
   // Код для закрытия окна по нажатию клавиши Esc и клике по иконке закрытия.
   const imgUploadCancel = document.querySelector('.img-upload__cancel');
 
+  // Подключение скалирования и изменения эффектов
+  beginScale();
+  accessEffects();
+
+
   // Функция закрытия формы и редактирования изображения
   function closeUploadForm () {
     imgUploadOverlay.classList.add('hidden');
@@ -50,11 +57,15 @@ const showUploadForm = () => {
     document.removeEventListener('keydown', onImgUploadFormEscKeydown);
     imgUploadCancel.removeEventListener('click', onUploadCancelButtonClick);
 
+    // Удаление обработчиков шкалирования и эффектов
+    finishScale();
+    finishEffects();
   }
 
   // Добавление обработчиков событий
   imgUploadCancel.addEventListener('click', onUploadCancelButtonClick);
   document.addEventListener('keydown', onImgUploadFormEscKeydown);
+
 
 };
 
