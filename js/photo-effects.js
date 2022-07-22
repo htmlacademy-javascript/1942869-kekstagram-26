@@ -1,33 +1,63 @@
 const EFFECTS = {
   chrome: {
     FILTER: 'grayscale',
-    MIN: 0,
-    MAX: 1,
-    STEP: 0.1
+    OPTIONS: {
+      range: {
+        min: 0,
+        max: 1,
+      },
+      start: 1,
+      step: 0.1,
+    },
+    STEP_UNIT: ''
   },
   sepia: {
     FILTER: 'sepia',
-    MIN: 0,
-    MAX: 1,
-    STEP: 0.1
+    OPTIONS: {
+      range: {
+        min: 0,
+        max: 1,
+      },
+      start: 1,
+      step: 0.1,
+    },
+    STEP_UNIT: ''
   },
   marvin: {
     FILTER: 'invert',
-    MIN: 0,
-    MAX: 100,
-    STEP: 1
+    OPTIONS: {
+      range: {
+        min: 0,
+        max: 100,
+      },
+      start: 100,
+      step: 1,
+    },
+    STEP_UNIT: '%'
   },
   phobos: {
     FILTER: 'blur',
-    MIN: 0,
-    MAX: 3,
-    STEP: 0.1
+    OPTIONS: {
+      range: {
+        min: 0,
+        max: 3,
+      },
+      start: 3,
+      step: 0.1,
+    },
+    STEP_UNIT: 'px'
   },
   heat: {
     FILTER: 'brightness',
-    MIN: 1,
-    MAX: 3,
-    STEP: 0.1
+    OPTIONS: {
+      range: {
+        min: 1,
+        max: 3,
+      },
+      start: 3,
+      step: 0.1,
+    },
+    STEP_UNIT: ''
   },
 };
 
@@ -55,6 +85,25 @@ noUiSlider.create(effectLevelSliderElement, {
 // добавить картинке внутри .img-upload__preview CSS-класс, соответствующий эффекту
 const onEffectsListClick = (evt) => {
 
+  // Функция для скалирования фильтров
+  const applyFilterEffect = (effect) => {
+    const effectStepUnit = EFFECTS[effect].STEP_UNIT;
+    const effectStyle = EFFECTS[effect].FILTER;
+    effectLevelSliderElement.noUiSlider.on('update', () => {
+      // Уровень эффекта записывается в поле .effect-level__value
+      effectLevelValueElement.value = effectLevelSliderElement.noUiSlider.get();
+      imgUploadPreviewElement.style.filter = `${effectStyle}(${effectLevelValueElement.value}${effectStepUnit})`;
+    });
+
+    imgUploadEffectLevelElement.classList.remove('hidden');
+    imgUploadPreviewElement.removeAttribute('class');
+    imgUploadPreviewElement.classList.add(`effects__preview--${effect}`);
+    // При переключении эффектов, уровень насыщенности сбрасывается до начального значения (100%):
+    imgUploadPreviewElement.style.filter = `${effectStyle}(${EFFECTS[effect].OPTIONS.start}${effectStepUnit})`;
+    // слайдер, CSS-стиль изображения и значение поля должны обновляться.
+    effectLevelSliderElement.noUiSlider.updateOptions(EFFECTS[effect].OPTIONS);
+  };
+
   // Для оригинального изображения
   imgUploadPreviewElement.removeAttribute('class');
   if (evt.target.id === 'effect-none') {
@@ -63,43 +112,10 @@ const onEffectsListClick = (evt) => {
     // Для эффекта «Оригинал» CSS-стили filter удаляются.
     imgUploadPreviewElement.style.filter = 'none';
 
-  // Для всех остальных
+  // Для примененных фильтров
   } else {
-    const effectName = evt.target.id.replace(/effect-/, '');
-    const effectStyle = EFFECTS[effectName].FILTER;
-    effectLevelSliderElement.noUiSlider.on('update', () => {
-      // Уровень эффекта записывается в поле .effect-level__value
-      effectLevelValueElement.value = effectLevelSliderElement.noUiSlider.get();
-      // При изменении уровня интенсивности эффекта (предоставляется API слайдера),
-      // CSS-стили картинки внутри .img-upload__preview обновляются
-      if (effectName === 'marvin') {
-        // Для эффекта «Марвин» — filter: invert(0..100%) с шагом 1%;
-        imgUploadPreviewElement.style.filter = `${effectStyle}(${effectLevelValueElement.value}%)`;
-      } else if (effectName === 'phobos') {
-        // Для эффекта «Фобос» — filter: blur(0..3px) с шагом 0.1px;
-        imgUploadPreviewElement.style.filter = `${effectStyle}(${effectLevelValueElement.value}px)`;
-      } else {
-        // Для эффекта «Хром» — filter: grayscale(0..1) с шагом 0.1;
-        // Для эффекта «Сепия» — filter: sepia(0..1) с шагом 0.1;
-        // Для эффекта «Зной» — filter: brightness(1..3) с шагом 0.1;
-        imgUploadPreviewElement.style.filter = `${effectStyle}(${effectLevelValueElement.value})`;
-      }
-    });
-
-    imgUploadEffectLevelElement.classList.remove('hidden');
-    imgUploadPreviewElement.removeAttribute('class');
-    imgUploadPreviewElement.classList.add(`effects__preview--${effectName}`);
-    // При переключении эффектов, уровень насыщенности сбрасывается до начального значения (100%):
-    imgUploadPreviewElement.style.filter = `${effectStyle}(${EFFECTS[effectName].MAX})`;
-    // слайдер, CSS-стиль изображения и значение поля должны обновляться.
-    effectLevelSliderElement.noUiSlider.updateOptions({
-      range: {
-        min: EFFECTS[effectName].MIN,
-        max: EFFECTS[effectName].MAX
-      },
-      start: EFFECTS[effectName].MAX,
-      step: EFFECTS[effectName].STEP
-    });
+    const effectName = evt.target.value;
+    applyFilterEffect(effectName);
   }
 };
 
