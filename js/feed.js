@@ -5,9 +5,7 @@ const renderPhotos = (photos) => {
   const pictures = document.querySelector('.pictures');
 
   // 2 Ищем шаблон по которому будем создавать картинки по шаблону
-  const pictureTemplate = document.querySelector('#picture')
-    .content
-    .querySelector('.picture');
+  const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
   // 3 Создаём фрагмент куда будем класть эти картинки
   const pictureFragment = document.createDocumentFragment();
