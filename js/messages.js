@@ -7,7 +7,7 @@ const errorMsgElement = errorMsgTemplate.cloneNode(true);
 const errorButtonElement = errorMsgElement.querySelector('.error__button');
 const successMsgTemplate = document.querySelector('#success').content.querySelector('.success');
 const successMsgElement = successMsgTemplate.cloneNode(true);
-const  successButtonElement = successMsgElement.querySelector('.success__button');
+const successButtonElement = successMsgElement.querySelector('.success__button');
 
 
 // Функция показа сообщения об ошибке
