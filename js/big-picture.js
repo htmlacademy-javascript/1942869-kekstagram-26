@@ -46,6 +46,7 @@ const showPicture = (photo) => {
       const commentsElement = document.createElement('li');
       commentsElement.classList.add('social__comment');
       const socialPicture = document.createElement('img');
+      socialPicture.classList.add('social__picture');
       socialPicture.src = comment.avatar;
       socialPicture.alt = comment.name;
       socialPicture.width = 35;

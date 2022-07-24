@@ -1,6 +1,7 @@
 import { isEscapeKey, isMaxStrLengthFitSize } from './util.js';
 import {beginScale, finishScale} from './picture-scale.js';
 import {accessEffects, finishEffects} from './photo-effects.js';
+import {sendData} from './api.js';
 
 const HASHTAG_REGEX = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
 const COMMENTS_MAX_LENGTH = 140;
@@ -10,10 +11,27 @@ const imgUploadForm = document.querySelector('.img-upload__form');
 const imgUploadOverlay = document.querySelector('.img-upload__overlay');
 const bodyElement = document.querySelector('body');
 const uploadFileElement = imgUploadForm.querySelector('#upload-file');
+const imgUploadCancel = document.querySelector('.img-upload__cancel');
 
 // Переменные для валидации
 const textHashtagElement = imgUploadForm.querySelector('.text__hashtags');
 const textDescriptionElement = imgUploadForm.querySelector('.text__description');
+
+// Переменная для отправки фото
+const submitButton = document.querySelector('.img-upload__submit');
+
+// Функция действий при нажатии кнопки Esc
+const onImgUploadFormEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    closeUploadForm();
+  }
+};
+
+// Функция действия при клике на кнопку закрытия
+const onUploadCancelButtonClick = () => {
+  closeUploadForm();
+};
 
 // Открытие формы и редактирования изображения
 const showUploadForm = () => {
@@ -22,58 +40,38 @@ const showUploadForm = () => {
   imgUploadOverlay.classList.remove('hidden');
   bodyElement.classList.add('modal-open');
 
-  // Функция действий при нажатии кнопки Esc
-  const onImgUploadFormEscKeydown = (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      closeUploadForm();
-    }
-  };
-
-  // Функция действия при клике на кнопку закрытия
-  const onUploadCancelButtonClick = () => {
-    closeUploadForm();
-  };
-
-  // Код для закрытия окна по нажатию клавиши Esc и клике по иконке закрытия.
-  const imgUploadCancel = document.querySelector('.img-upload__cancel');
-
   // Подключение скалирования и изменения эффектов
   beginScale();
   accessEffects();
 
-
-  // Функция закрытия формы и редактирования изображения
-  function closeUploadForm () {
-    imgUploadOverlay.classList.add('hidden');
-    bodyElement.classList.remove('modal-open');
-    // Обратите внимание, что при закрытии формы дополнительно необходимо сбрасывать значение поля выбора файла
-    // #upload-file. В принципе, всё будет работать, если при повторной попытке загрузить в поле другую фотографию.
-    // Но! Событие change не сработает, если пользователь попробует загрузить ту же фотографию, а значит окно с
-    // формой не отобразится, что будет нарушением техзадания. Значение других полей формы также нужно сбрасывать.
-    imgUploadForm.reset();
-
-    //Удаление обработчиков событий
-    document.removeEventListener('keydown', onImgUploadFormEscKeydown);
-    imgUploadCancel.removeEventListener('click', onUploadCancelButtonClick);
-
-    // Удаление обработчиков шкалирования и эффектов
-    finishScale();
-    finishEffects();
-  }
-
   // Добавление обработчиков событий
   imgUploadCancel.addEventListener('click', onUploadCancelButtonClick);
   document.addEventListener('keydown', onImgUploadFormEscKeydown);
-
-
 };
+
+// Функция закрытия формы и редактирования изображения
+function closeUploadForm () {
+  imgUploadOverlay.classList.add('hidden');
+  bodyElement.classList.remove('modal-open');
+  // Обратите внимание, что при закрытии формы дополнительно необходимо сбрасывать значение поля выбора файла
+  // #upload-file. В принципе, всё будет работать, если при повторной попытке загрузить в поле другую фотографию.
+  // Но! Событие change не сработает, если пользователь попробует загрузить ту же фотографию, а значит окно с
+  // формой не отобразится, что будет нарушением техзадания. Значение других полей формы также нужно сбрасывать.
+  imgUploadForm.reset();
+
+  //Удаление обработчиков событий
+  document.removeEventListener('keydown', onImgUploadFormEscKeydown);
+  imgUploadCancel.removeEventListener('click', onUploadCancelButtonClick);
+
+  // Удаление обработчиков шкалирования и эффектов
+  finishScale();
+  finishEffects();
+}
 
 const addUploadFileChangeHandler = () => {
   // Добавляем слушатель на загрузку формы
   uploadFileElement.addEventListener('change', showUploadForm);
 };
-
 
 // !Начало раздела валидации
 
@@ -159,13 +157,41 @@ pristine.addValidator(
   'Длина комментария не может составлять больше 140 символов'
 );
 
-imgUploadForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  if (pristine.validate()) {
-    imgUploadForm.submit();
-  }
-});
-
 // Конец раздела валидации
 
-export { addUploadFileChangeHandler };
+// Функция блокировки кнопки отправить
+const blockSubmitButton = () => {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Публикую...';
+};
+
+// Функция разблокировки кнопки отправить
+const unblockSubmitButton = () => {
+  submitButton.disabled = false;
+  submitButton.textContent = 'Опубликовать';
+};
+
+// Отправка данных из формы на сервер
+const setUserFormSubmit = (onSuccess, onFail) => {
+  imgUploadForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData (
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+        },
+        () => {
+          onFail();
+          unblockSubmitButton();
+        },
+        new FormData(evt.target),
+      );
+    }
+  });
+};
+
+export { addUploadFileChangeHandler, setUserFormSubmit, closeUploadForm };
