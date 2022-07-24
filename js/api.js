@@ -1,5 +1,3 @@
-import {showAlert} from './util.js';
-
 const URLS = {
   GET: 'https://26.javascript.pages.academy/kekstagram/data',
   POST: 'https://26.javascript.pages.academy/kekstagram'
