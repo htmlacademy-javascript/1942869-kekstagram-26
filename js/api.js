@@ -6,14 +6,19 @@ const URLS = {
 };
 
 // Получение данных с сервера
-const getData = (onSuccess) => {
+const getData = (onSuccess, onFail) => {
   fetch(URLS.GET)
-    .then((response) => response.ok? response.json() : showAlert('Сервер не отвечает. Попробуйте позже'))
-    .then((data) => {
-      onSuccess(data);
+    .then((response) => {
+      if (!response.ok) {
+        throw new new Error (onFail('Сервер не отвечает. Попробуйте позже'));
+      }
+      return response.json();
+    })
+    .then((posts) => {
+      onSuccess(posts);
     })
     .catch(() => {
-      showAlert('Ошибка зугрузки данных');
+      onFail('Ошибка зугрузки данных');
     });
 };
 
