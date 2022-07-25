@@ -4,6 +4,7 @@ import { getData } from './api.js';
 import { submitSuccessForm, submitErrorForm } from './messages.js';
 import { createFilters } from './feed-filters.js';
 import { showAlert } from './util.js';
+import './upload-photo.js';
 
 // Получение данных с сервера
 getData((photos) => {
